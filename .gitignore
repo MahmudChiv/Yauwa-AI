@@ -1,0 +1,23 @@
+# Local credentials; keep the shared template.
+.env
+.env.*
+!.env.example
+
+# Virtual environments and generated caches.
+.venv/
+venv/
+env/
+fastapi-env/
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+samples/
+yauwa_execution_plan_v2.pdf
+yauwa_execution_plan.pdf
+yauwa_prd.pdf
+yauwa_prd_v2.pdf
