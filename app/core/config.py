@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     elevenlabs_api_key: SecretStr
     elevenlabs_voice_id: str
     elevenlabs_model_id: str = "eleven_v3"
+    demo_phone_number: str = ""
+    demo_reset_key: str = "yauwa-demo-2024"
 
     @field_validator("public_base_url")
     @classmethod

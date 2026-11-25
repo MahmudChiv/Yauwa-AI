@@ -21,6 +21,7 @@ from app.services.onboarding import (
     onboard_trader,
     send_onboarding_reply,
 )
+from app.services.demo import handle_demo_message
 from app.services.message_processing import process_trader_audio
 from app.providers.twilio import normalize_phone_number
 from app.core.config import Settings, TwilioSettings, get_settings, get_twilio_settings
@@ -315,6 +316,20 @@ async def _process_incoming_message(
     async with lock:
         logger.info("Incoming trader message background processing started")
         try:
+            settings: Settings = get_settings()
+            if (
+                isinstance(settings.demo_phone_number, str)
+                and settings.demo_phone_number.strip()
+                and normalize_phone_number(settings.demo_phone_number) == phone_number
+            ):
+                return await handle_demo_message(phone_number, settings)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception("Incoming trader message failed")
+            return "processing failed"
+
+        try:
             with Session(get_engine()) as session:
                 is_onboarded = onboarding_complete(session, phone_number)
         except Exception:
@@ -323,7 +338,6 @@ async def _process_incoming_message(
 
         audio_path: str | None = None
         try:
-            settings: Settings = get_settings()
             normalized_content_type = (
                 payload.content_type.partition(";")[0].strip().lower()
                 if payload.content_type
